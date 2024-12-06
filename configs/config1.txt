@@ -16,7 +16,7 @@ CONFIG = {
         "stroke_color": "black",
         "shadow_blur": 0.3,
         "font_color": "white",
-        "vertical_position_offset": 150,
+        "vertical_position_offset": 100,
         "word_highlight_color": "yellow",
         "padding": 50,
         "highlight_current_word": True,

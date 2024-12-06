@@ -16,9 +16,9 @@ def generate_content(account_topic):
        max_tokens=1024,
        messages=[{
            "role": "user",
-           "content": """You are a topic writer for a tiktok video. You write the topic only, not the text of the video.
-                        Write the topic for the following account : Daily "did you know" for adults.
-                        Give the topic, only the topic.
+           "content": f"""You are a topic writer for a tiktok video. You write the topic only, not the text or the script of the video.
+                        Write the topic for the following account : {account_topic}.
+                        Give the topic, only the topic, not the whole script.
                         Topic:"""
        }]
    )

@@ -22,8 +22,10 @@ PATHS = {
 }
 
 CONFIG = {
-    "general": {
+    "account": {
         "account_topic": "Daily 'did you know' for adults",
+    },
+    "general": {
         "voice": "echo",
         "original_audio_volume": 0.1,
         "music_volume": 0.1,
@@ -39,7 +41,7 @@ CONFIG = {
         "stroke_color": "black",
         "shadow_blur": 0.3,
         "font_color": "white",
-        "vertical_position_offset": 150,
+        "vertical_position_offset": 100,
         "word_highlight_color": "red",
         "padding": 50,
         "highlight_current_word": True,
@@ -55,10 +57,11 @@ CONFIG = {
 def main():
     try:
         print("\n=== Starting TikTok Video Generation ===\n")
+        cleanup_tmp()
 
         # Generate content
         print("\n📝 Generating content...")
-        script_text = generate_content(CONFIG["general"]["account_topic"])
+        script_text = generate_content(CONFIG["account"]["account_topic"])
         print(f"✓ Generated script: \"{script_text}\"\n")
 
         # Create TTS
@@ -69,12 +72,14 @@ def main():
         # Update paths
         tmp_gameplay = os.path.join(PATHS["tmp_dir"], "gameplay.mp4")
         tmp_tts = os.path.join(PATHS["tmp_dir"], "tts.mp3")
-        tmp_tiktok = os.path.join(PATHS["tmp_dir"], "temp_tiktok.mp4")
+        tmp_tiktok_1 = os.path.join(PATHS["tmp_dir"], "temp_tiktok_1.mp4")
+        tmp_tiktok_2 = os.path.join(PATHS["tmp_dir"], "temp_tiktok_2.mp4")
         final_output = os.path.join(PATHS["outputs_dir"], "final_tiktok.mp4")
 
         # Create TikTok
         print("🎬 Creating base TikTok video...")
-        # get_random_video(PATHS["urls_csv"], output_path=tmp_gameplay)
+        get_random_video(PATHS["urls_csv"], output_path=tmp_gameplay)
+
         create_tiktok(
             video_path=tmp_gameplay,
             audio_path=tmp_tts,
@@ -82,13 +87,20 @@ def main():
             music_volume=CONFIG["general"]["music_volume"],
             original_audio_volume=CONFIG["general"]["original_audio_volume"],
             global_blur=CONFIG["general"]["global_blur"],
-            output_path=tmp_tiktok
+            output_path=tmp_tiktok_1
         )
         print("✓ Base video created successfully\n")
 
-        transcription = transcribe_audio(tmp_tts)
-        subtitle_format = format_subtitles(transcription)
-        smileys = subtitle_format.segment_smiley
+        for i in range(3):
+            try:
+                transcription = transcribe_audio(tmp_tts)
+                subtitle_format = format_subtitles(transcription)
+                smileys = subtitle_format.segment_smiley
+                break
+
+            except Exception as e:
+                print(f"❌ Error: {str(e)}")
+                continue
 
         # print("\n\n\n")
         # print(f"SUBTITLES:\n{subtitle_format}\n")
@@ -101,9 +113,9 @@ def main():
 
         # Add emojis to video
         add_animated_emojis(
-            video_path=tmp_tiktok,
+            video_path=tmp_tiktok_1,
             emojis_timestamps=smileys_timestamps,
-            output_path=tmp_tiktok,
+            output_path=tmp_tiktok_2,
             **CONFIG["subtitles"]["emojis"]
         )
 
@@ -120,7 +132,7 @@ def main():
             increase_font_size=CONFIG["subtitles"]["increase_font_size"],
             vertical_position_offset=CONFIG["subtitles"]["vertical_position_offset"],
             captions=captions,
-            tmp_tiktok=tmp_tiktok,
+            tmp_tiktok=tmp_tiktok_2,
             final_output=final_output,
         )
 
@@ -132,7 +144,7 @@ def main():
         raise
     finally:
         print("🧹 Cleaning up temporary files...")
-        # cleanup_tmp()
+        cleanup_tmp()
         print("\n=== Process Complete ===\n")
 
 if __name__ == "__main__":
