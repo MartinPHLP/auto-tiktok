@@ -1,12 +1,10 @@
 final_tiktok.mp4
 gameplay.mp4
-subtitle_test.png
-test_subtitles_config.py
-theme.mp3
-urls.csv
 .env
 tmp/
 subtitled/
 env/
 __pycache__/
 .DS_Store
+utils/
+results/*.mp4
